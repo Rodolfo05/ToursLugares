@@ -1,0 +1,41 @@
+1. Crear proyecto Web Api
+
+2. En Carpeta Controladores crear nuevo controlador
+
+3. Crear metodos
+
+4. Crear carpeta Datos y dentro crear archivo ApplicationDbContext.cs
+
+5. Crear carpeta Entidades y dentro crear archivo .cs con la(s) entidad(es) del proyecto.
+
+5. En el NuGet Package Managetment instalar complemento de Entity Framework segun BD a utilizar (MySql, SQL Postgres, etc)
+
+6. ApplicationDbContext.cs debe heredar desde DbContext, quedando asi:
+   public class ApplicationDbContext : DbContext
+
+7. Se cra una propiedad del DbSer<Elemento> 
+
+8. Se configura connectionString en appsettings.json
+
+9- Se modifica Program.cs para agregar servicio dbcontext:
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                        options.UseMySql(connectionString,
+                        ServerVersion.AutoDetect(connectionString)));
+
+===Entity Framework===
+10. Agregar EF desde el administrador Nuget
+
+11. Ejecutar por consola:
+dotnet ef migrations add  MigracionInicial -o Datos/Migrations
+
+12.Ejecutar: dotnet ef database update 
+
+13. Agregar constructor en el controllador:
+public readonly ApplicationDbContext _db;
+
+        public LugaresController(ApplicationDbContext db)
+        {
+            _db = db;
+        }
