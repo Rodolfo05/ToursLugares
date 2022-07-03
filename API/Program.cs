@@ -1,3 +1,4 @@
+using Core.Interfaces;
 using Infraestructura.Datos;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,14 +17,33 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<ILugarRepositorio, LugarRepositorio>();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+//Aplicar las nuevas migraciones al ejecutar la aplicacion y alimentar la base de datos
+using (var scope = app.Services.CreateScope()) {
+    var services = scope.ServiceProvider;
+    var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+
+    try {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        await context.Database.MigrateAsync();
+        await BaseDatosSeed.SeedAsync(context, loggerFactory);
+    }
+    catch (System.Exception ex) {
+        var logger = loggerFactory.CreateLogger<Program>();
+        logger.LogError(ex, "Ocurrio un error al ejecutar la migracion.");
+    }
 }
+/////////////////////////////////////////////////////
+
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
 app.UseHttpsRedirection();
 

@@ -6,6 +6,7 @@ using Infraestructura.Datos;
 using Core.Entidades;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Core.Interfaces;
 
 namespace API.Controllers
 {
@@ -13,17 +14,17 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class LugaresController : ControllerBase
     {
-        public readonly ApplicationDbContext _db;
+        public readonly ILugarRepositorio _repo;
 
-        public LugaresController(ApplicationDbContext db)
+        public LugaresController(Core.Interfaces.ILugarRepositorio repo)
         {
-            _db = db;
+            _repo = repo;
         }
 
         [HttpGet] 
         public async Task<ActionResult<List<Lugar>>> GetLugares() {
 
-            var lugares = await _db.Lugar.ToListAsync();
+            var lugares = await _repo.GetLugaresAsync();
 
             return Ok(lugares);
 
@@ -33,7 +34,7 @@ namespace API.Controllers
         public async Task<ActionResult<Lugar>> GetLugar(int id)
         {
 
-            var lugar = await _db.Lugar.FindAsync(id);
+            var lugar = await _repo.GetLugarAsync(id);
 
             return Ok(lugar);
 

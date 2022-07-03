@@ -39,3 +39,5 @@ public readonly ApplicationDbContext _db;
         {
             _db = db;
         }
+
+14. Se crea carpeta Interfaces en Core, En Datos se crea xxxRepositorio.cs
